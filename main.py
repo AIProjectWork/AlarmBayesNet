@@ -112,14 +112,12 @@ class AlarmBayes:
     # -----------------------------------------------------------------------------|
     def reset_assignments(self):
         """
-
+        Make all nodes' assignment to ASSIGNMENT_NONE
         """
         for node in self.all_nodes:
             node.set_assignment(None)
 
     # ------------------------ reset_assignments - ends----------------------------------|
-
-
 
     # -----------------------------------------------------------------------------|
     # consider_evidence
@@ -129,21 +127,17 @@ class AlarmBayes:
         this will assign truth value for all node from evidence
         """
         for evidence in evidences:
-            print ("Evidence: {}".format(evidence))
             node = self.find_node(evidence[0])
-            print ("Evidence node" + node.name + " assignment:" + node.assignment)
             node.set_assignment(evidence[1])
-            print ("Evidence node" + node.name + " assignment:" + node.assignment)
 
     # ------------------------ consider_evidence - ends----------------------------------|
-
 
     # -----------------------------------------------------------------------------|
     # print_all_nodes
     # -----------------------------------------------------------------------------|
     def print_all_nodes(self):
         """
-
+        print all node name with truth value assignment
         """
         print ("All nodes status:")
         for node in self.all_nodes:
@@ -181,7 +175,7 @@ class AlarmBayes:
     def parse_query_input(input_value):
         """
         sample input will be string [J,M]
-        this should return list of
+        this should return list of nodes representing J and M
         """
         return input_value.replace("[", "").replace("]", "").split(",")
         # ------------------------ parse_query_input - ends----------------------------------|
@@ -190,16 +184,17 @@ class AlarmBayes:
     # normalize
     # -----------------------------------------------------------------------------|
     @staticmethod
-    def normalize(distributionList):
+    def normalize(distribution):
         """
-
+        takes distribution and return normalized distribution
+        <0.1,0.4> => <0.2,0.8> //this will sum to 1.0
         """
         total = 0
-        for value in distributionList:
+        for value in distribution:
             total += value
 
         result = []
-        for value in distributionList:
+        for value in distribution:
             result.append(value / total)
 
         return result
@@ -211,14 +206,13 @@ class AlarmBayes:
     # -----------------------------------------------------------------------------|
     def get_all_evidences(self):
         """
-
+        returns list of nodes with assigned truth values
         """
-        my_list = []
+        evidence_list = []
         for node in self.all_nodes:
             if node.assignment is not Node.ASSIGNMENT_NONE:
-                my_list.append(node)
-        print ("returning evidences of length: {}".format(len(my_list)))
-        return my_list
+                evidence_list.append(node)
+        return evidence_list
         # ------------------------ get_all_evidences - ends----------------------------------|
 
 
@@ -230,88 +224,73 @@ class Enumeration:
     # result_for_enumeration
     # -----------------------------------------------------------------------------|
     @staticmethod
-    def result_for_enumeration(queries, evidence_list, bn):
+    def result_for_enumeration(queries, evidence_list, input_bayesnet):
         """
-
+        This will take list of queries and perform enum_ask for each
         """
         for query in queries:
-            print("Distribution over " + bn.find_node(query).name + ":")
-            print (Enumeration.enum_ask(query, evidence_list, bn))
+            print("Distribution over " + input_bayesnet.find_node(query).name + ":")
+            print (Enumeration.enum_ask(query, evidence_list, input_bayesnet))
 
     # ------------------------ result_for_enumeration - ends----------------------------------|
-
 
     # -----------------------------------------------------------------------------|
     # enum_ask
     # -----------------------------------------------------------------------------|
     @staticmethod
-    def enum_ask(query, evidence_list, bn):
+    def enum_ask(query, evidence_list, input_bayesnet):
         """
-
+        this is the function asked for enum. Entry point for each
         """
-        bn.reset_assignments()
-        query_node = bn.find_node(query)
-        bn.consider_evidences(evidence_list)
-        bn.print_all_nodes()
         result = []
         for query_truth in (Node.ASSIGNMENT_TRUE, Node.ASSIGNMENT_FALSE):
-            bn.reset_assignments()
-            bn.consider_evidences(evidence_list)
-            query_node = bn.find_node(query)
+            input_bayesnet.reset_assignments()
+            input_bayesnet.consider_evidences(evidence_list)
+            query_node = input_bayesnet.find_node(query)
             query_node.set_assignment(query_truth)
-            print ("after query assignment for" + query + query_truth)
-            bn.print_all_nodes()
-            result.append(Enumeration.enum_all(bn.all_nodes, bn.get_all_evidences()))
-
+            result.append(Enumeration.enum_all(input_bayesnet.all_nodes, input_bayesnet.get_all_evidences()))
         return AlarmBayes.normalize(result)
 
     # ------------------------ enum_ask - ends----------------------------------|
-
 
     # -----------------------------------------------------------------------------|
     # enum_all
     # -----------------------------------------------------------------------------|
     @staticmethod
-    def enum_all(nodes, evidences2):
+    def enum_all(nodes, evidences):
         """
-
+        this will enum over all nodes in recursive manner
         """
         if nodes is None or len(nodes) is 0:
-            #   print("here")
             return 1.0
 
-        # print ("evidences {}".format(evidences2))
-        # print(len(nodes))
         first_node = nodes[0]
-        # print ("nodes at this point {}".format(nodes))
-        print ("first node:" + first_node.name + first_node.assignment)
-        if first_node in evidences2:
-            print("starting calculating {}".format(first_node.name))
-            evidence_for_value = evidences2 + [first_node]
-            resultValue = first_node.get_probability_for_assignment(first_node.assignment) * Enumeration.enum_all(
-                nodes[1:], evidence_for_value)
-            print("after calculating {}".format(first_node.name))
-            print("we have {}".format(resultValue))
-            return resultValue
+        if first_node in evidences:
+            # print("starting calculating {}".format(first_node.name))
+            result_value = first_node.get_probability_for_assignment(first_node.assignment) * Enumeration.enum_all(
+                nodes[1:], evidences)
+            # print("after calculating {}".format(first_node.name))
+            # print("returning {}".format(result_value))
+            return result_value
         else:
-            print("value not assigned to " + first_node.name)
-            print("starting Summing out {}".format(first_node.name))
+
+            # print("starting summing out {}".format(first_node.name))
+
+            # add node to the evidences
+            evidences = evidences + [first_node]
+
+            # first assign "true" to the node
             first_node.set_assignment(Node.ASSIGNMENT_TRUE)
-            print(evidences2)
-            # evidences2.append(first_node)
-            evidenceForPositive = evidences2 + [first_node]
             positive_value = first_node.get_probability_for_assignment(first_node.assignment) * Enumeration.enum_all(
-                nodes[1:], evidenceForPositive)
+                nodes[1:], evidences)
+
+            # now assign "false" to the node
             first_node.set_assignment(Node.ASSIGNMENT_FALSE)
-            evidenceForNegative = evidences2 + [first_node]
-
             negative_value = first_node.get_probability_for_assignment(first_node.assignment) * Enumeration.enum_all(
-                nodes[1:], evidenceForNegative)
-            print("after Summing out {}".format(first_node.name))
-            print("we have {}".format(positive_value + negative_value))
+                nodes[1:], evidences)
+            # print("after Summing out {}".format(first_node.name))
+            # print("returning {}".format(positive_value + negative_value))
             return positive_value + negative_value
-
-
             # ------------------------ enum_all - ends----------------------------------|
 
 
@@ -325,4 +304,5 @@ if __name__ == '__main__':
     evidences_input = AlarmBayes.parse_evidence_input(sys.argv[1])
     query_params = AlarmBayes.parse_query_input(sys.argv[2])
 
+    # result by enumeration
     Enumeration.result_for_enumeration(query_params, evidences_input, bn)
