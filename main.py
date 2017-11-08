@@ -338,9 +338,9 @@ class Enumeration:
         """
         This will take list of queries and perform enum_ask for each
         """
-        for query in queries:
-            print("Distribution over " + input_bayesnet.find_node(query).name + ":")
-            print (Enumeration.enum_ask(query, evidence_list, input_bayesnet))
+        print("Distribution over " + input_bayesnet.find_node(query).name + ":")
+        print (Enumeration.enum_ask(query, evidence_list, input_bayesnet))
+
 
     # ------------------------ result_for_enumeration - ends----------------------------------|
 
@@ -360,6 +360,7 @@ class Enumeration:
             query_node.set_assignment(query_truth)
             result.append(Enumeration.enum_all(input_bayesnet.all_nodes, input_bayesnet.get_all_evidences()))
         return AlarmBayes.normalize(result)
+
 
     # ------------------------ enum_ask - ends----------------------------------|
 
@@ -401,10 +402,9 @@ class Enumeration:
             # print("after Summing out {}".format(first_node.name))
             # print("returning {}".format(positive_value + negative_value))
             return positive_value + negative_value
-            # ------------------------ enum_all - ends----------------------------------|
+            # ------------------------ enum_all - ends----------------------------------|  # -----------------------------------------------------------------------------|
 
 
-# -----------------------------------------------------------------------------|
 # get_count_from_dict
 # -----------------------------------------------------------------------------|
 def get_count_from_dict(bayes_net, fixed_assigned_vars, count_dict):
@@ -445,19 +445,18 @@ if __name__ == '__main__':
     query_params = AlarmBayes.parse_query_input(sys.argv[2])
 
     # result by enumeration
-    Enumeration.result_for_enumeration(query_params, evidences_input, bn)
-    for sample_numbers in (10, 50, 100, 200, 500, 1000, 10000, 100000, 1000000):
-        count_dict = bn.generate_samples(sample_numbers)
-        count_of_evidence = get_count_from_dict(bn, evidences_input, count_dict)
-        count_of_query_evidence = get_count_from_dict(bn, evidences_input + [(query_params[0], Node.ASSIGNMENT_TRUE)],
-                                                      count_dict)
-        if count_of_evidence is 0:
-            final_value = 0
-        else:
-            final_value = (count_of_query_evidence / float(count_of_evidence))
-        print (
-        "Sampling {}: {} / {} => Distribution<{},{}>".format(sample_numbers, count_of_query_evidence, count_of_evidence,
-                                                             final_value, 1 - final_value))
-        # print count_of_evidence
-        # print count_of_query_evidence
-        # print count_of_query_evidence / float(count_of_evidence)
+    for query in query_params:
+        Enumeration.result_for_enumeration(query, evidences_input, bn)
+        for sample_numbers in (10, 50, 100, 200, 500, 1000, 10000, 100000):
+            count_dict = bn.generate_samples(sample_numbers)
+            count_of_evidence = get_count_from_dict(bn, evidences_input, count_dict)
+            count_of_query_evidence = get_count_from_dict(bn, evidences_input + [(query, Node.ASSIGNMENT_TRUE)],
+                                                          count_dict)
+            if count_of_evidence is 0:
+                final_value = 0
+            else:
+                final_value = (count_of_query_evidence / float(count_of_evidence))
+            print (
+                "Sampling {}: {} / {} => Distribution<{},{}>".format(sample_numbers, count_of_query_evidence,
+                                                                     count_of_evidence,
+                                                                     final_value, 1 - final_value))
