@@ -1,3 +1,4 @@
+import random
 import sys
 
 
@@ -83,6 +84,24 @@ class Node:
 
         return assignment
         # ------------------------ get_parent_assignment_combination - ends----------------------------------|
+
+    # -----------------------------------------------------------------------------|
+    # assign_new_random_value_based_on_parent
+    # -----------------------------------------------------------------------------|
+    def assign_new_random_value_based_on_parent(self):
+        """
+        this will generate new random number. and assign a truth value based on that number
+        if random number is less or equal to it's probability for assignment true, it will be assigned true else false
+        """
+        random_value = random.uniform(0, 1)
+        # //print random_value
+        # print "should be <="
+        # print self.cond_distribution[self.get_parent_assignment_combination()]
+        if random_value <= self.get_probability_for_assignment(Node.ASSIGNMENT_TRUE):
+            self.assignment = Node.ASSIGNMENT_TRUE
+        else:
+            self.assignment = Node.ASSIGNMENT_FALSE
+            # ------------------------ assign_new_random_value_based_on_parent - ends----------------------------------|
 
 
 class AlarmBayes:
@@ -215,6 +234,97 @@ class AlarmBayes:
         return evidence_list
         # ------------------------ get_all_evidences - ends----------------------------------|
 
+    # -----------------------------------------------------------------------------|
+    # generate_samples
+    # -----------------------------------------------------------------------------|
+    def generate_samples(self, required_sample_count):
+        """
+        this will generate @required_sample_count samples
+        and return hashmap
+        """
+        count_dict = self.generate_dictionary(self.gen_combinations())
+        for i in range(0, required_sample_count):
+            self.reset_assignments()
+            for node in self.all_nodes:
+                node.assign_new_random_value_based_on_parent()
+                #     now all variables have been assigned values so the sample is ready
+            count_dict[self.current_assignment_comb()] = count_dict[self.current_assignment_comb()] + 1;
+
+        # print count_dict
+        return count_dict
+        # ------------------------ generate_samples - ends----------------------------------|
+
+    # -----------------------------------------------------------------------------|
+    # current_assignment_comb
+    # -----------------------------------------------------------------------------|
+    def current_assignment_comb(self):
+        """
+        returns string "TFTFT" based on variables truth values
+        """
+        comb = ""
+        for node in self.all_nodes:
+            comb += node.assignment
+        return comb
+
+    # ------------------------ current_assignment_comb - ends----------------------------------|
+
+    # -----------------------------------------------------------------------------|
+    # generate_dictoinary
+    # -----------------------------------------------------------------------------|
+    def generate_dictionary(self, combinations):
+        """
+        creates dictionary using combinations
+        """
+        dictionary = dict()
+
+        for combination in combinations:
+            dictionary[combination] = 0
+        return dictionary
+
+    # ------------------------ generate_dictoinary - ends----------------------------------|
+
+    # -----------------------------------------------------------------------------|
+    # gen_combinations
+    # -----------------------------------------------------------------------------|
+    def gen_combinations(self):
+        """
+        generates different values
+        if total_var = 2
+        then it will return TT, TF, FT, FF
+        """
+        total_vars = len(self.all_nodes)
+        all_possible_comb = []
+        total_samples = 2 ** total_vars
+
+        for i in range(1, total_vars + 1):
+            cycle = 2 ** (total_vars - i)
+            for j in range(0, total_samples):
+                current_mod = (j / cycle) % 2
+                if current_mod is 0:
+                    value_to_append = Node.ASSIGNMENT_TRUE
+                else:
+                    value_to_append = Node.ASSIGNMENT_FALSE
+
+                if i is 1:
+                    all_possible_comb.append(value_to_append)
+                else:
+                    all_possible_comb[j] = all_possible_comb[j] + value_to_append
+
+        return all_possible_comb
+
+    # -----------------------------------------------------------------------------|
+    # node_pos_in_list
+    # -----------------------------------------------------------------------------|
+    def node_pos_in_list(self, node):
+        """
+
+        """
+        for i in range(0, len(self.all_nodes)):
+            if self.all_nodes[i] is node:
+                return i
+        return -1
+        # ------------------------ node_pos_in_list - ends----------------------------------|
+
 
 class Enumeration:
     def __init__(self):
@@ -294,6 +404,36 @@ class Enumeration:
             # ------------------------ enum_all - ends----------------------------------|
 
 
+# -----------------------------------------------------------------------------|
+# get_count_from_dict
+# -----------------------------------------------------------------------------|
+def get_count_from_dict(bayes_net, fixed_assigned_vars, count_dict):
+    """
+
+    """
+    var_pos_values = []
+    for assigned_var in fixed_assigned_vars:
+        node = bn.find_node(assigned_var[0])
+        pos = bn.node_pos_in_list(node)
+        var_pos_values.append((pos, assigned_var[1]))
+
+    # print var_pos_values
+    count = 0
+    for key in bn.gen_combinations():
+        is_eligible_assignment = True
+        for pos_value in var_pos_values:
+            if key[pos_value[0]] is not pos_value[1]:
+                is_eligible_assignment = False
+                break
+
+        if is_eligible_assignment:
+            count += count_dict[key]
+
+    return count
+
+
+# ------------------------ get_count_from_dict - ends----------------------------------|
+
 if __name__ == '__main__':
     bn = AlarmBayes()
     # bn.find_node("B").set_assignment(Node.ASSIGNMENT_TRUE)
@@ -306,3 +446,18 @@ if __name__ == '__main__':
 
     # result by enumeration
     Enumeration.result_for_enumeration(query_params, evidences_input, bn)
+    for sample_numbers in (10, 50, 100, 200, 500, 1000, 10000, 100000, 1000000):
+        count_dict = bn.generate_samples(sample_numbers)
+        count_of_evidence = get_count_from_dict(bn, evidences_input, count_dict)
+        count_of_query_evidence = get_count_from_dict(bn, evidences_input + [(query_params[0], Node.ASSIGNMENT_TRUE)],
+                                                      count_dict)
+        if count_of_evidence is 0:
+            final_value = 0
+        else:
+            final_value = (count_of_query_evidence / float(count_of_evidence))
+        print (
+        "Sampling {}: {} / {} => Distribution<{},{}>".format(sample_numbers, count_of_query_evidence, count_of_evidence,
+                                                             final_value, 1 - final_value))
+        # print count_of_evidence
+        # print count_of_query_evidence
+        # print count_of_query_evidence / float(count_of_evidence)
