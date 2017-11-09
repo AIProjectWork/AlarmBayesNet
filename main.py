@@ -444,16 +444,19 @@ if __name__ == '__main__':
     evidences_input = AlarmBayes.parse_evidence_input(sys.argv[1])
     query_params = AlarmBayes.parse_query_input(sys.argv[2])
 
-    # result by enumeration
+    # work on each query param turn by turn
     for query in query_params:
+        # enum result
         Enumeration.result_for_enumeration(query, evidences_input, bn)
+
+        # sampling
         for sample_numbers in (10, 50, 100, 200, 500, 1000, 10000, 100000):
             count_dict = bn.generate_samples(sample_numbers)
             count_of_evidence = get_count_from_dict(bn, evidences_input, count_dict)
             count_of_query_evidence = get_count_from_dict(bn, evidences_input + [(query, Node.ASSIGNMENT_TRUE)],
                                                           count_dict)
             if count_of_evidence is 0:
-                final_value = 0
+                final_value = 0.0
             else:
                 final_value = (count_of_query_evidence / float(count_of_evidence))
             print (
