@@ -38,6 +38,7 @@ class NodeUtil:
         else:
             raise Exception('no correct self assignment found for ' + self.name\
                                                                     + " node")
+        #if parent_assignment_combination -ends
 
 # ------------------------ get_probability_for_assignment - ends---------------|
 
@@ -55,7 +56,7 @@ class NodeUtil:
             self.assignment = NodeUtil.ASSIGNMENT_FALSE
         else:
             self.assignment = NodeUtil.ASSIGNMENT_NONE
-
+        #if assignment -ends
 # ------------------------ set_assignment - ends-------------------------------|
 
 # -----------------------------------------------------------------------------|
@@ -74,6 +75,7 @@ class NodeUtil:
         """
         if self.parent_nodes is None:
             return 'T'
+        #if self.parent_nodes -ends
 
         assignment = ""
         for parent in self.parent_nodes:
@@ -85,6 +87,8 @@ class NodeUtil:
                 assignment += 'F'
             else:
                 return None
+            #if parent.assignemnt -ends
+        #for parent -ends
 
         return assignment
 # ------------------------ get_parent_assignment_combination - ends------------|
@@ -108,4 +112,5 @@ class NodeUtil:
             self.assignment = NodeUtil.ASSIGNMENT_TRUE
         else:
             self.assignment = NodeUtil.ASSIGNMENT_FALSE
+        #if random_values -ends
 # ------------------------ assign_new_random_value_based_on_parent - ends------|

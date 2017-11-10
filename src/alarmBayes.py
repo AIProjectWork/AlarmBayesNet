@@ -26,6 +26,8 @@ class AlarmBayes:
             if name_or_representation.lower() in {node.name.lower(), \
                                                   node.representation.lower()}:
                 return node
+            #if name_or_representation -ends
+        #for node -ends
         return None
 # ------------------------ find_node - ends------------------------------------|
 
@@ -38,6 +40,7 @@ class AlarmBayes:
         """
         for node in self.all_nodes:
             node.set_assignment(None)
+        #for node -ends
 
 # ------------------------ reset_assignments - ends----------------------------|
 
@@ -51,28 +54,17 @@ class AlarmBayes:
         for evidence in evidences:
             node = self.find_node(evidence[0])
             node.set_assignment(evidence[1])
+        #for evidence -ends
 
 # ------------------------ consider_evidence - ends----------------------------|
 
-# -----------------------------------------------------------------------------|
-# print_all_nodes
-# -----------------------------------------------------------------------------|
-    def print_all_nodes(self):
-        """
-        print all nodeUtil name with truth value assignment
-        """
-        print ("All nodes status:")
-        for node in self.all_nodes:
-            print ("nodeUtil: " + node.name + "(" + node.assignment + ")")
 
-# ------------------------ print_all_nodes - ends------------------------------|
 
 
 # -----------------------------------------------------------------------------|
 # normalize
 # -----------------------------------------------------------------------------|
-    @staticmethod
-    def normalize(distribution):
+    def normalize(self, distribution):
         """
         takes distribution and return normalized distribution
         <0.1,0.4> => <0.2,0.8> //this will sum to 1.0
@@ -80,11 +72,12 @@ class AlarmBayes:
         total = 0
         for value in distribution:
             total += value
+        #for value -ends
 
         result = []
         for value in distribution:
             result.append(value / total)
-
+        #for value -ends
         return result
 
 # -------------------------- normalize - ends----------------------------------|
@@ -100,6 +93,8 @@ class AlarmBayes:
         for node in self.all_nodes:
             if node.assignment is not NodeUtil.ASSIGNMENT_NONE:
                 evidence_list.append(node)
+            #if node.assignment -ends
+        #for node -ends
         return evidence_list
 # ------------------------ get_all_evidences - ends----------------------------|
 
@@ -116,10 +111,13 @@ class AlarmBayes:
             self.reset_assignments()
             for node in self.all_nodes:
                 node.assign_new_random_value_based_on_parent()
-                #     now all variables have been assigned values so the sample is ready
+            #for node -ends
+            
+            #now all variables have been assigned values so the sample is ready
             count_dict[self.current_assignment_comb()] = \
                                 count_dict[self.current_assignment_comb()] + 1;
-
+        #for i -ends
+        
         # print count_dict
         return count_dict
 # ------------------------ generate_samples - ends-----------------------------|
@@ -134,6 +132,7 @@ class AlarmBayes:
         comb = ""
         for node in self.all_nodes:
             comb += node.assignment
+        #for node -ends
         return comb
 
 # ------------------------ current_assignment_comb - ends----------------------|
@@ -149,6 +148,7 @@ class AlarmBayes:
 
         for combination in combinations:
             dictionary[combination] = 0
+        #for combination -ends
         return dictionary
 
 # ------------------------ generate_dictoinary - ends--------------------------|
@@ -174,12 +174,15 @@ class AlarmBayes:
                     value_to_append = NodeUtil.ASSIGNMENT_TRUE
                 else:
                     value_to_append = NodeUtil.ASSIGNMENT_FALSE
+                #if current_mod -ends
 
                 if i is 1:
                     all_possible_comb.append(value_to_append)
                 else:
                     all_possible_comb[j] = all_possible_comb[j] + value_to_append
-
+                #if i -ends
+            #for j -ends
+        #for i -ends
         return all_possible_comb
 
 # -----------------------------------------------------------------------------|
@@ -192,5 +195,7 @@ class AlarmBayes:
         for i in range(0, len(self.all_nodes)):
             if self.all_nodes[i] is node:
                 return i
+            #if self.all_nodes -ends
+        #for i -ends
         return -1
 # ------------------------ node_pos_in_list - ends-----------------------------|
