@@ -19,6 +19,10 @@ class AlarmBayesUI:
         evidences_input = myIO.parse_evidence_input(input_value = inputParam)
         query_params = myIO.parse_query_input(input_value = queryParam)
 
+#         #debug
+#         print ('evidences_input = {} '.format(evidences_input))
+#         print ('query_params = {}'.format(query_params))
+#         #debug -ends
 
         alarmBayes = AlarmBayes()
         # work on each query param turn by turn
