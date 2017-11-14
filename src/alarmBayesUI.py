@@ -29,31 +29,22 @@ class AlarmBayesUI:
         for query in query_params:
             # enum result
             enumerationUtil = EnumerationUtil()
+            
             enumerationUtil.result_for_enumeration(query, evidences_input,\
                                                                      alarmBayes)
     
             # sampling
-            for sample_numbers in (10, 50, 100, 200, 500, 1000, 10000, 100000):
-                count_dict = alarmBayes.generate_samples(sample_numbers)
-                count_of_evidence = enumerationUtil.get_count_from_dict(\
-                                        alarmBayes, evidences_input, count_dict)
-                count_of_query_evidence = enumerationUtil.get_count_from_dict(\
-                                            alarmBayes, evidences_input\
-                                            +[(query, NodeUtil.ASSIGNMENT_TRUE)],
-                                            count_dict)
-                if count_of_evidence is 0:
-                    final_value = 0.0
-                else:
-                    final_value = (count_of_query_evidence / float(\
-                                                            count_of_evidence))
-                print ("Sampling {}: {} / {} => Distribution<{},{}>".format(\
-                                                        sample_numbers,\
-                                                        count_of_query_evidence,\
-                                                        count_of_evidence,\
-                                                        final_value,\
-                                                        1 - final_value))
-                #if count_of_evidence -ends
-            #for sample_numbers -ends
+            sample_list = [10, 50, 100, 200, 500, 1000, 10000, 100000]
+            sample_output, sample_rejection_output = \
+                    enumerationUtil.result_for_sampling(query, evidences_input,\
+                                                        alarmBayes, sample_list)
+            
+            nSamples = len(sample_list)
+            print ("\n------------------- sampling ---------------------------")
+            myIO.print_sample_output(sample_output, nSamples)
+            
+            print("\n------------------ sample - rejection -------------------")
+            myIO.print_sample_output(sample_rejection_output, nSamples)
         #for query -ends
 #|------------------------alarmBayesUI -ends-----------------------------------|    
 

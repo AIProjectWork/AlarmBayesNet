@@ -13,11 +13,97 @@ class EnumerationUtil:
         """
         This will take list of queries and perform enum_ask for each
         """
+        print ("\n------------ enumeration --------------")
         print("Distribution over " + input_bayesnet.find_node(query).name + ":")
         print (self.enum_ask(query, evidence_list, input_bayesnet))
-
+        
 
 # ------------------------ result_for_enumeration - ends-----------------------|
+#|-----------------------------------------------------------------------------|
+# result_for_sampling
+#|-----------------------------------------------------------------------------|
+    def result_for_sampling(self,query,evidences_input,alarmBayes,sample_list):
+        """
+        Input: query, evidence list, bayesnet and sample list 
+        it will perform sampling and print the result
+        """
+        sampling_output = []
+        sample_rejection_output = []
+        for sample_numbers in sample_list:
+            count_dict = alarmBayes.generate_samples(sample_numbers)
+            count_of_evidence = self.get_count_from_dict(\
+                                    alarmBayes, evidences_input, count_dict)
+            count_of_query_evidence = self.get_count_from_dict(\
+                                        alarmBayes, evidences_input\
+                                        +[(query, NodeUtil.ASSIGNMENT_TRUE)],
+                                        count_dict)
+            #sampling output
+            if count_of_evidence is 0:
+                final_value = 0.0
+            else:
+                final_value = (count_of_query_evidence / float(\
+                                                        count_of_evidence))
+            #if count_of_evidence -ends
+            sampling_output.append([sample_numbers,count_of_query_evidence,\
+                                count_of_evidence, final_value,1 - final_value])
+            
+            
+            #----------------- performing sample rejection ---------------------
+            sample_rejected_dict = self.reject_samples(count_dict,\
+                                                     evidences_input, alarmBayes)
+#             #debug
+#             print ('sample_rejected_dict = {} '.format(sample_rejected_dict))
+#             #debug -ends
+            count_of_evidence = self.get_count_from_dict(\
+                                    alarmBayes, evidences_input, sample_rejected_dict)
+            count_of_query_evidence = self.get_count_from_dict(\
+                                        alarmBayes, evidences_input\
+                                        +[(query, NodeUtil.ASSIGNMENT_TRUE)],
+                                        sample_rejected_dict)
+            
+            if count_of_evidence is 0:
+                final_value = 0.0
+            else:
+                final_value = (count_of_query_evidence / float(\
+                                                        count_of_evidence))
+            #if count_of_evidence -ends
+            sample_rejection_output.append([sample_numbers,count_of_query_evidence,\
+                                count_of_evidence, final_value,1 - final_value])
+            
+        #for sample_numbers -ends
+        
+        
+        return sampling_output, sample_rejection_output
+            
+        
+#|------------------------result_for_sampling -ends----------------------------|
+#|-----------------------------------------------------------------------------|
+# reject_samples
+#|-----------------------------------------------------------------------------|
+    def reject_samples(self, count_dict,evidences_input, alarmBayes):
+        """
+        Here we are taking count_dict and matching its key with all evidences.
+        key is taken in output_dict if all evidence matches with key in count_dict
+        
+        """
+        output_dict = {}
+        for key in count_dict:
+            matchFlag = 0
+            total_evidences = len(evidences_input)
+            for evidence in evidences_input:
+                node = alarmBayes.find_node(evidence[0])
+                node_index = alarmBayes.all_nodes.index(node)
+                
+                if (key[node_index]==evidence[1]):
+                    matchFlag+=1
+                #if -ends
+            #for evidence -ends
+            if total_evidences==matchFlag:
+                output_dict[key]=count_dict[key]
+            #if total_evidence -ends
+        #for key -ends
+        return output_dict
+#|------------------------reject_samples -ends----------------------------------|        
 
 # -----------------------------------------------------------------------------|
 # enum_ask

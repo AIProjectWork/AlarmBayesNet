@@ -50,3 +50,24 @@ class MyIO:
         #for node -ends
 
 # ------------------------ print_all_nodes - ends------------------------------|
+#|-----------------------------------------------------------------------------|
+# print_sample_output
+#|-----------------------------------------------------------------------------|
+    def print_sample_output(self, output_list, nSamples):
+        """
+        input : output_list[0] = sample_numbers
+                output_list[1] = count_of_query_evidence
+                output_list[2] = count_of_evidence
+                output_list[3] = final_value
+                output_list[4] = 1 - final_value
+        """
+        for i in range(nSamples):        
+            print ("nSamples {}: {} / {} => Distribution<{},{}>".format(\
+                                        output_list[i][0], output_list[i][1],\
+                                        output_list[i][2],output_list[i][3],\
+                                        output_list[i][4]))
+        #for i -ends
+
+            
+    
+#|------------------------print_sample_output -ends----------------------------------|    
