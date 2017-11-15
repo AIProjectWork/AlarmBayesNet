@@ -213,9 +213,11 @@ class AlarmBayes:
         returns weight of current assignment
         """
         w = 1.0
-        for node in self.all_nodes:
-            if(node.representation in evidences):
-                w = w * node.get_probability_for_assignment(node.assignment)
+        # print evidences
+        for evidence in evidences:
+            representation = evidence[0]
+            node = self.find_node(representation)
+            w = w * node.get_probability_for_assignment(node.assignment)
         return w
     # ------------------------ get_current_weight - ends----------------------------------|
 
