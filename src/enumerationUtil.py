@@ -28,7 +28,6 @@ class EnumerationUtil:
         it will perform sampling and print the result
         """
         sampling_output = []
-        sample_rejection_output = []
         for sample_numbers in sample_list:
             count_dict = alarmBayes.generate_samples(sample_numbers)
             count_of_evidence = self.get_count_from_dict(\
@@ -47,33 +46,18 @@ class EnumerationUtil:
             sampling_output.append([sample_numbers,count_of_query_evidence,\
                                 count_of_evidence, final_value,1 - final_value])
 
-            #----------------- performing sample rejection ---------------------
-            sample_rejected_dict = self.reject_samples(count_dict,\
-                                                     evidences_input, alarmBayes)
-#             #debug
-#             print ('sample_rejected_dict = {} '.format(sample_rejected_dict))
-#             #debug -ends
-            count_of_evidence = self.get_count_from_dict(\
-                                    alarmBayes, evidences_input, sample_rejected_dict)
-            count_of_query_evidence = self.get_count_from_dict(\
-                                        alarmBayes, evidences_input\
-                                        +[(query, NodeUtil.ASSIGNMENT_TRUE)],
-                                        sample_rejected_dict)
 
             if count_of_evidence is 0:
                 final_value = 0.0
             else:
                 final_value = (count_of_query_evidence / float(\
                                                         count_of_evidence))
-            #if count_of_evidence -ends
-            sample_rejection_output.append([sample_numbers,count_of_query_evidence,\
-                                count_of_evidence, final_value,1 - final_value])
+
 
         #for sample_numbers -ends
 
 
-        return sampling_output, sample_rejection_output
-
+        return sampling_output
 # |-----------------------------------------------------------------------------|
 # result_for_sampling
 # |-----------------------------------------------------------------------------|
