@@ -98,7 +98,7 @@ class MyIO:
                 output_list[3] = calculated weight
                 output_list[4] = 1 - calculated weight
         """
-        for i in range(nSamples):
+        for i in range(0,nSamples):
             print ("nSamples {}: {} / {} => <{},{}>".format( \
                 output_list[i][0], output_list[i][1], \
                 output_list[i][2],output_list[i][3], \

@@ -62,10 +62,10 @@ class AlarmBayesUI:
 
             #finding likelihood
             likelihoodUtil = LikelihoodUtil()
-            weight = enumerationUtil.result_for_likelihood_weight(query, evidences_input, alarmBayes, [10000])
+            likelihood_result = enumerationUtil.result_for_likelihood_weight(query, evidences_input, alarmBayes, sample_list)
             
             print ("\n------------- likelihood (query sample weight / total weight) ----------------------------")
-            myIO.print_likelihood_output(sample_output, nSamples)
+            myIO.print_likelihood_output(likelihood_result, nSamples)
         #for query -ends
 #|------------------------alarmBayesUI -ends-----------------------------------|    
 

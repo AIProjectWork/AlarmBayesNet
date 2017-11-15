@@ -103,18 +103,10 @@ class EnumerationUtil:
             likelihood_output.append([sample_numbers,query_weight, \
                                     total_weight, final_value,1 - final_value])
 
-
-            if total_weight is 0:
-                final_value = 0.0
-            else:
-                final_value = (query_weight / float( \
-                    total_weight))
-
-
         #for sample_numbers -ends
 
-
-        return final_value
+        # print likelihood_output
+        return likelihood_output
 
 
 
