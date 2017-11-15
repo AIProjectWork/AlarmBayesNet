@@ -64,21 +64,27 @@ class AlarmBayes:
 # -----------------------------------------------------------------------------|
 # normalize
 # -----------------------------------------------------------------------------|
-    def normalize(self, distribution):
-        """
-        takes distribution and return normalized distribution
-        <0.1,0.4> => <0.2,0.8> //this will sum to 1.0
-        """
-        total = 0
-        for value in distribution:
-            total += value
-        #for value -ends
 
-        result = []
-        for value in distribution:
-            result.append(value / total)
-        #for value -ends
-        return result
+    @staticmethod
+    def normalize(distribution):
+            """
+            takes distribution and return normalized distribution
+            <0.1,0.4> => <0.2,0.8> //this will sum to 1.0
+            """
+            # print distribution
+            total = 0.0
+            for value in distribution:
+                total += value
+            #for value -ends
+
+            result = []
+            for value in distribution:
+                if (total == 0):
+                    result.append(0.0)
+                else:
+                    result.append(value / total)
+            #for value -ends
+            return result
 
 # -------------------------- normalize - ends----------------------------------|
 
@@ -112,12 +118,12 @@ class AlarmBayes:
             for node in self.all_nodes:
                 node.assign_new_random_value_based_on_parent()
             #for node -ends
-            
+
             #now all variables have been assigned values so the sample is ready
             count_dict[self.current_assignment_comb()] = \
                                 count_dict[self.current_assignment_comb()] + 1;
         #for i -ends
-        
+
         # print count_dict
         return count_dict
 # ------------------------ generate_samples - ends-----------------------------|
@@ -199,3 +205,44 @@ class AlarmBayes:
         #for i -ends
         return -1
 # ------------------------ node_pos_in_list - ends-----------------------------|
+
+
+# -----------------------------------------------------------------------------|
+# generate_single_sample
+# -----------------------------------------------------------------------------|
+    def generate_single_sample(self):
+        """
+        this will create single sample and return it's assignment combination
+        """
+        self.reset_assignments()
+        for node in self.all_nodes:
+            node.assign_new_random_value_based_on_parent()
+        # for node -ends
+
+        return self.current_assignment_comb()
+
+# ------------------------ generate_single_sample - ends----------------------------------|
+
+
+# -----------------------------------------------------------------------------|
+# is_consistent_with_evidence
+# -----------------------------------------------------------------------------|
+    def is_consistent_with_evidence(self, assignment, evidences_input):
+        """
+
+        """
+        match_count = 0
+        for evidence in evidences_input:
+            node = self.find_node(evidence[0])
+            node_index = self.all_nodes.index(node)
+
+            if assignment[node_index] == evidence[1]:
+                match_count += 1
+                # if -ends
+                # for evidence -ends
+        if len(evidences_input) == match_count:
+            return True
+        else:
+            return False
+            # if total_evidence -ends
+            # ------------------------ is_consistent_with_evidence - ends----------------------------------|

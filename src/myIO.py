@@ -1,3 +1,5 @@
+from alarmBayes import AlarmBayes
+
 
 class MyIO:
 
@@ -61,13 +63,28 @@ class MyIO:
                 output_list[3] = final_value
                 output_list[4] = 1 - final_value
         """
-        for i in range(nSamples):        
-            print ("nSamples {}: {} / {} => Distribution<{},{}>".format(\
-                                        output_list[i][0], output_list[i][1],\
+        for i in range(nSamples):
+            print ("nSamples {}: {} / {} => <{},{}>".format( \
+                output_list[i][0], output_list[i][1],\
                                         output_list[i][2],output_list[i][3],\
                                         output_list[i][4]))
         #for i -ends
 
-            
-    
-#|------------------------print_sample_output -ends----------------------------------|    
+
+
+            # |------------------------print_sample_output -ends----------------------------------|    #|-----------------------------------------------------------------------------|
+        # print_sample_rejection_output
+        # |-----------------------------------------------------------------------------|
+
+    def print_sample_rejection_output(self, result):
+        """
+        result: [[10,[3,4],[100,[20,30]]
+        """
+        for result_entry in result:
+            distribution = result_entry[1]
+            normal_distribution = AlarmBayes.normalize(distribution)
+            print ("nSamples {}: {} / {} => <{},{}>".format(result_entry[0], distribution[0], distribution[1],
+                                                            normal_distribution[0], normal_distribution[1]))
+
+
+            # |------------------------print_sample_output -ends----------------------------------|
