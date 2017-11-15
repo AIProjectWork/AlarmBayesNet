@@ -36,6 +36,7 @@ class MyIO:
         sample input will be string [J,M]
         this should return list of nodes representing J and M
         """
+        
         return input_value.replace("[", "").replace("]", "").split(",")
 # ------------------------ parse_query_input - ends----------------------------|
 
