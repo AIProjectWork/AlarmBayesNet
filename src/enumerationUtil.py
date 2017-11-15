@@ -80,6 +80,43 @@ class EnumerationUtil:
 
 #|------------------------result_for_sampling -ends----------------------------|
 
+#|-----------------------------------------------------------------------------|
+# result_for_sampling
+#|-----------------------------------------------------------------------------|
+    def result_for_likelihood_weight(self,query,evidences_input,alarmBayes,sample_list):
+        """
+        Input: query, evidence list, bayesnet and sample list
+        it will perform sampling and print the result
+        """
+        likelihood_output = []
+        for sample_numbers in sample_list:
+            count_dict = alarmBayes.generate_weighted_samples(sample_numbers, evidences_input)
+            total_weight = self.get_total_weight_from_dict(count_dict)
+            query_weight = self.get_query_weight_from_dict(count_dict, query)
+            #sampling output
+            if total_weight is 0:
+                final_value = 0.0
+            else:
+                final_value = (query_weight / float( \
+                    total_weight))
+            #if count_of_evidence -ends
+            likelihood_output.append([sample_numbers,query_weight, \
+                                    total_weight, final_value,1 - final_value])
+
+
+            if total_weight is 0:
+                final_value = 0.0
+            else:
+                final_value = (query_weight / float( \
+                    total_weight))
+
+
+        #for sample_numbers -ends
+
+
+        return final_value
+
+
 
 # -----------------------------------------------------------------------------|
 # get_distribution_with_sample_rejection
@@ -229,3 +266,27 @@ class EnumerationUtil:
         return count
 
 # ------------------------ get_count_from_dict - ends--------------------------|
+
+    def get_total_weight_from_dict(self, count_weight_dict):
+        """
+
+        """
+        weight = 0
+        for key, value in count_weight_dict.iteritems():
+            weight = weight + (value[0] * value[1])
+
+        return weight
+
+    def get_query_weight_from_dict(self, count_weight_dict, query):
+        """
+
+        """
+        alarmBayes = AlarmBayes()
+        index =alarmBayes.all_nodes.index(alarmBayes.find_node(query))
+        weight = 0
+        for key, value in count_weight_dict.iteritems():
+            if key[index] is NodeUtil.ASSIGNMENT_TRUE:
+                weight = weight + (value[0] * value[1])
+
+        return weight
+

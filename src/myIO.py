@@ -89,3 +89,24 @@ class MyIO:
 
 
             # |------------------------print_sample_output -ends----------------------------------|
+
+    def print_likelihood_output(self, output_list, nSamples):
+        """
+        input : output_list[0] = sample_numbers
+                output_list[1] = weight of query
+                output_list[2] = total weight
+                output_list[3] = calculated weight
+                output_list[4] = 1 - calculated weight
+        """
+        for i in range(nSamples):
+            print ("nSamples {}: {} / {} => <{},{}>".format( \
+                output_list[i][0], output_list[i][1], \
+                output_list[i][2],output_list[i][3], \
+                output_list[i][4]))
+            #for i -ends
+
+
+
+            # |------------------------print_sample_output -ends----------------------------------|    #|-----------------------------------------------------------------------------|
+            # print_sample_rejection_output
+            # |-----------------------------------------------------------------------------|

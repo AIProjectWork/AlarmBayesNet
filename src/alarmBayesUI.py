@@ -44,29 +44,28 @@ class AlarmBayesUI:
     
             # sampling
             sample_list = [10, 50, 100, 200, 500, 1000, 10000, 100000]
-#             sample_output = \
-#                     enumerationUtil.result_for_sampling(query, evidences_input,\
-#                                                         alarmBayes, sample_list)
-#             # sampling rejection
-#             result_with_sample_rejection = \
-#                 enumerationUtil.result_for_sampling_rejection(query, evidences_input, \
-#                                                               alarmBayes, sample_list)
-#              
-#             nSamples = len(sample_list)
-#             print ("\n------------------- sampling ---------------------------")
-#             myIO.print_sample_output(sample_output, nSamples)
-#              
-#             print("\n------------------ sample - rejection -------------------")
-#             # myIO.print_sample_output(sample_rejection_output, nSamples)
-#             myIO.print_sample_rejection_output(result_with_sample_rejection)
+            sample_output = \
+                    enumerationUtil.result_for_sampling(query, evidences_input,\
+                                                        alarmBayes, sample_list)
+            # sampling rejection
+            result_with_sample_rejection = \
+                enumerationUtil.result_for_sampling_rejection(query, evidences_input, \
+                                                              alarmBayes, sample_list)
+
+            nSamples = len(sample_list)
+            print ("\n------------------- sampling (positive samples / total samples) ---------------------------")
+            myIO.print_sample_output(sample_output, nSamples)
+
+            print("\n------------------ sample - rejection (positive samples / total samples)-------------------")
+            # myIO.print_sample_output(sample_rejection_output, nSamples)
+            myIO.print_sample_rejection_output(result_with_sample_rejection)
 
             #finding likelihood
             likelihoodUtil = LikelihoodUtil()
-            weight = likelihoodUtil.likelihood_weighting(query, evidences_input, alarmBayes, [10])
+            weight = enumerationUtil.result_for_likelihood_weight(query, evidences_input, alarmBayes, [10000])
             
-            print ("\n------------- likelihood ----------------------------")
-            print ("weight of {} = <{}>".format(alarmBayes.find_node(query).name,\
-                                              weight))
+            print ("\n------------- likelihood (query sample weight / total weight) ----------------------------")
+            myIO.print_likelihood_output(sample_output, nSamples)
         #for query -ends
 #|------------------------alarmBayesUI -ends-----------------------------------|    
 

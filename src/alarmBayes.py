@@ -128,6 +128,30 @@ class AlarmBayes:
         return count_dict
 # ------------------------ generate_samples - ends-----------------------------|
 
+# -----------------------------------------------------------------------------|
+# generate_samples
+# -----------------------------------------------------------------------------|
+    def generate_weighted_samples(self, required_sample_count, evidences):
+        """
+        this will generate @required_sample_count samples
+        and return hashmap
+        """
+        count_weight_dict = self.generate_weighted_dictionary(self.gen_combinations(), evidences)
+        for i in range(0, required_sample_count):
+            self.reset_assignments()
+            for node in self.all_nodes:
+                node.assign_new_random_value_based_on_parent()
+            #for node -ends
+
+            #now all variables have been assigned values so the sample is ready
+            count_weight_dict[self.current_assignment_comb()][0] = \
+                count_weight_dict[self.current_assignment_comb()][0] + 1
+        #for i -ends
+
+        # print count_dict
+        return count_weight_dict
+# ------------------------ generate_samples - ends-----------------------------|
+
 # -------------------------------------------------------------------------|
 # current_assignment_comb
 # -------------------------------------------------------------------------|
@@ -158,6 +182,42 @@ class AlarmBayes:
         return dictionary
 
 # ------------------------ generate_dictoinary - ends--------------------------|
+
+# -----------------------------------------------------------------------------|
+# generate_dictoinary
+# -----------------------------------------------------------------------------|
+    def generate_weighted_dictionary(self, combinations, evidences):
+        """
+        creates dictionary using combinations
+        """
+        dictionary = dict()
+
+        for combination in combinations:
+            alarm_bayes = AlarmBayes()
+            for i in range(0,len(combination)):
+                alarm_bayes.all_nodes[i].set_assignment(combination[i])
+            current_weight = alarm_bayes.get_current_weight(evidences)
+
+            dictionary[combination] = [0, current_weight]
+        #for combination -ends
+        return dictionary
+
+# ------------------------ generate_dictoinary - ends--------------------------|
+
+
+    # -----------------------------------------------------------------------------|
+    # get_current_weight
+    # -----------------------------------------------------------------------------|
+    def get_current_weight(self, evidences):
+        """
+        returns weight of current assignment
+        """
+        w = 1.0
+        for node in self.all_nodes:
+            if(node.representation in evidences):
+                w = w * node.get_probability_for_assignment(node.assignment)
+        return w
+    # ------------------------ get_current_weight - ends----------------------------------|
 
 # -----------------------------------------------------------------------------|
 # gen_combinations
