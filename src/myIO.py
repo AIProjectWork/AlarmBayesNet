@@ -76,15 +76,15 @@ class MyIO:
         # print_sample_rejection_output
         # |-----------------------------------------------------------------------------|
 
-def print_sample_rejection_output(self, result):
-    """
-    result: [[10,[3,4],[100,[20,30]]
-    """
-    for result_entry in result:
-        distribution = result_entry[1]
-        normal_distribution = AlarmBayes.normalize(distribution)
-        print ("nSamples {}: {} / {} => <{},{}>".format(result_entry[0], distribution[0], distribution[1],
-                                                        normal_distribution[0], normal_distribution[1]))
+    def print_sample_rejection_output(self, result):
+        """
+        result: [[10,[3,4],[100,[20,30]]
+        """
+        for result_entry in result:
+            distribution = result_entry[1]
+            normal_distribution = AlarmBayes.normalize(distribution)
+            print ("nSamples {}: {} / {} => <{},{}>".format(result_entry[0], distribution[0], distribution[1],
+                                                            normal_distribution[0], normal_distribution[1]))
 
 
-        # |------------------------print_sample_output -ends----------------------------------|
+            # |------------------------print_sample_output -ends----------------------------------|

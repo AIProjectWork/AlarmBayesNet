@@ -77,43 +77,43 @@ class EnumerationUtil:
 # |-----------------------------------------------------------------------------|
 # result_for_sampling
 # |-----------------------------------------------------------------------------|
-def result_for_sampling_rejection(self, query, evidences_input, alarmBayes, sample_list):
-    """
-    Input: query, evidence list, bayesnet and sample list
-    it will perform sampling and print the result
-    output will be array of results. rach result is array. result[0] is number of samples and result[1] is distribution
-    """
-    sample_rejection_output = []
-    for sample_numbers in sample_list:
-        distribution = self.get_distribution_with_sample_rejection(sample_numbers, alarmBayes, query, evidences_input)
-        sample_rejection_output.append([sample_numbers, distribution])
+    def result_for_sampling_rejection(self, query, evidences_input, alarmBayes, sample_list):
+        """
+        Input: query, evidence list, bayesnet and sample list
+        it will perform sampling and print the result
+        output will be array of results. rach result is array. result[0] is number of samples and result[1] is distribution
+        """
+        sample_rejection_output = []
+        for sample_numbers in sample_list:
+            distribution = self.get_distribution_with_sample_rejection(sample_numbers, alarmBayes, query, evidences_input)
+            sample_rejection_output.append([sample_numbers, distribution])
 
-    # for sample_numbers -ends
-
-
-    return sample_rejection_output
+        # for sample_numbers -ends
 
 
-#|------------------------result_for_sampling -ends----------------------------|
+        return sample_rejection_output
+
+
+    #|------------------------result_for_sampling -ends----------------------------|
 
 
 # -----------------------------------------------------------------------------|
 # get_distribution_with_sample_rejection
 # -----------------------------------------------------------------------------|
-def get_distribution_with_sample_rejection(self, samples_count, alarm_bayes, query, evidences):
-    """
-    This will generate sample and reject if it is not supported by evidence
-    """
-    distribution = [0, 0]  # first for supporting with query true sample, other for supporting -ve sample
-    for i in range(0, samples_count):
-        sample_assignment = alarm_bayes.generate_single_sample()
-        if alarm_bayes.is_consistent_with_evidence(sample_assignment, evidences):
-            query_index = alarm_bayes.all_nodes.index(alarm_bayes.find_node(query))
-            if sample_assignment[query_index] is NodeUtil.ASSIGNMENT_TRUE:
-                distribution[0] = distribution[0] + 1
-            else:
-                distribution[1] = distribution[1] + 1
-    return distribution
+    def get_distribution_with_sample_rejection(self, samples_count, alarm_bayes, query, evidences):
+        """
+        This will generate sample and reject if it is not supported by evidence
+        """
+        distribution = [0, 0]  # first for supporting with query true sample, other for supporting -ve sample
+        for i in range(0, samples_count):
+            sample_assignment = alarm_bayes.generate_single_sample()
+            if alarm_bayes.is_consistent_with_evidence(sample_assignment, evidences):
+                query_index = alarm_bayes.all_nodes.index(alarm_bayes.find_node(query))
+                if sample_assignment[query_index] is NodeUtil.ASSIGNMENT_TRUE:
+                    distribution[0] = distribution[0] + 1
+                else:
+                    distribution[1] = distribution[1] + 1
+        return distribution
 
 # ------------------------ get_distribution_with_sample_rejection - ends----------------------------------|
 #|-----------------------------------------------------------------------------|
